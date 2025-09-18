@@ -1,110 +1,98 @@
-#include <bits/stdc++.h>
+#include <iostream>
 using namespace std;
 
-vector<vector<char>> board = {{'1','2','3'},{'4','5','6'},{'7','8','9'}};
+class TicTacToe {
+private:
+    char board[3][3];
+    char turn;
+    bool draw;
 
-int choice;
-int row,column;
-char turn = 'X';
-bool draw = false;
-void display_board() {
-    cout << "              PLAYER - 1 [X] \t PLAYER - 2 [O]\n\n";
-
-    for(int i = 0; i < 3; i++) {
-        cout << "   " << board[i][0] << "   |   " << board[i][1] << "   |   " << board[i][2] << "\n";
-
-        if(i < 2) {
-            cout << "_______|_______|_______\n";
-        }
-
-    }
-    cout << "\n";
-}
-
-void player_turn(){
-    if(turn == 'X'){
-        cout<<"Player - 1 [X] turn : ";
-    }
-    else if(turn == 'O'){
-        cout<<"Player - 2 [O] turn : ";
-    }
-
-
-    cin>> choice;
-
-
-    switch(choice){
-        case 1: row=0; column=0; break;
-        case 2: row=0; column=1; break;
-        case 3: row=0; column=2; break;
-        case 4: row=1; column=0; break;
-        case 5: row=1; column=1; break;
-        case 6: row=1; column=2; break;
-        case 7: row=2; column=0; break;
-        case 8: row=2; column=1; break;
-        case 9: row=2; column=2; break;
-        default:
-            cout<<"Invalid Move";
-    }
-
-    if(turn == 'X' && board[row][column] != 'X' && board[row][column] != 'O'){
-
-        board[row][column] = 'X';
-        turn = 'O';
-
-    }
-    else if(turn == 'O' && board[row][column] != 'X' && board[row][column] != 'O'){
-
-        board[row][column] = 'O';
+public:
+    TicTacToe() {
+        char num = '1';
+        for(int i=0; i<3; i++)
+            for(int j=0; j<3; j++)
+                board[i][j] = num++;
         turn = 'X';
+        draw = false;
     }
-    else {
-        cout<<"Box already filled!n Please choose another!!";
-        player_turn();
+
+    void display_board() {
+        cout << "\n";
+        for(int i=0; i<3; i++) {
+            for(int j=0; j<3; j++) {
+                cout << " " << board[i][j] << " ";
+                if(j<2) cout << "|";
+            }
+            cout << "\n";
+            if(i<2) cout << "-----------\n";
+        }
+        cout << "\n";
     }
-    display_board();
-}
 
+    void player_turn() {
+        int choice, row, col;
+        cout << "Player " << (turn == 'X' ? "1 [X]" : "2 [O]") << " turn: ";
+        cin >> choice;
 
-bool gameover(){
+        switch(choice) {
+            case 1: row=0; col=0; break;
+            case 2: row=0; col=1; break;
+            case 3: row=0; col=2; break;
+            case 4: row=1; col=0; break;
+            case 5: row=1; col=1; break;
+            case 6: row=1; col=2; break;
+            case 7: row=2; col=0; break;
+            case 8: row=2; col=1; break;
+            case 9: row=2; col=2; break;
+            default: cout << "Invalid Move!\n"; return;
+        }
 
-    for(int i=0; i<3; i++)
-        if(board[i][0] == board[i][1] && board[i][0] == board[i][2] || board[0][i] == board[1][i] && board[0][i] == board[2][i])
-            return false;
-
-
-    if(board[0][0] == board[1][1] && board[0][0] == board[2][2] || board[0][2] == board[1][1] && board[0][2] == board[2][0])
-        return false;
-
-
-    for(int i=0; i<3; i++)
-    {
-        for(int j=0; j<3; j++)
-        {
-            if(board[i][j] != 'X' && board[i][j] != 'O')
-                return true;
+        if(board[row][col] != 'X' && board[row][col] != 'O') {
+            board[row][col] = turn;
+            turn = (turn == 'X') ? 'O' : 'X';
+        } else {
+            cout << "Box already filled! Choose another!!\n";
+            player_turn();
         }
     }
 
-    draw = true;
-    return false;
-}
+    bool gameover() {
+        for(int i=0; i<3; i++) {
+            if(board[i][0] == board[i][1] && board[i][0] == board[i][2]) return false;
+            if(board[0][i] == board[1][i] && board[0][i] == board[2][i]) return false;
+        }
+        if(board[0][0] == board[1][1] && board[0][0] == board[2][2]) return false;
+        if(board[0][2] == board[1][1] && board[0][2] == board[2][0]) return false;
 
-signed main()
-{
-    cout<<"          TIC   TAC  TOE  GAME!!!!\n";
-    cout<< "=======================================================\n";
-    while(gameover()){
+        for(int i=0; i<3; i++)
+        {
+            for(int j=0; j<3; j++)
+            {
+                if(board[i][j] != 'X' && board[i][j] != 'O')
+                    return true;
+            }
+        }
+
+        draw = true;
+        return false;
+    }
+
+    void play() {
+        while(gameover()) {
+            display_board();
+            player_turn();
+        }
         display_board();
-        player_turn();
-        gameover();
+        cout << "Congratulations!!!!!!!!!!!!!!!!!!!!!!!!\n";
+        if(turn == 'X' && !draw) cout << "Player 2 [O] Wins!\n";
+        else if(turn == 'O' && !draw) cout << "Player 1 [X] Wins!\n";
+        else cout << "Game Draw!\n";
     }
-    if(turn == 'X' && draw == false){
-        cout<<"Congratulations!!!!!!!!!!!!!!!!!\n Player with 'O' has won the game!\n";
-    }
-    else if(turn == 'O' && draw == false){
-        cout<<"Congratulations!!!!!!!!!!!!!!!!!\n Player with 'X' has won the game!\n";
-    }
-    else
-    cout<<"GAME DRAW!!!\n";
+};
+
+int main() {
+    TicTacToe game;
+    game.play();
+    return 0;
 }
